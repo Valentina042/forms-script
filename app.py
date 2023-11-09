@@ -1,0 +1,49 @@
+import datetime
+import requests
+
+# URL of the HTTP resource you want to download
+url = "https://forms.office.com/formapi/DownloadExcelFile.ashx?formid=hAVkUEAqFkKoS5s-4PP2z1wb2iT-DClDo45v6kOeyAlUNVBFMThJRExGMVJVODJETElaM1hCQUw4USQlQCN0PWcu&timezoneOffset=300&__TimezoneId=America/Bogota&minResponseId=1&maxResponseId=58"
+
+
+# Define your cookies as a dictionary
+cookies = {
+    "MUID": "0816D2CC34B96F1436FAC18430B964D4; RpsAuthNonce=ec66d92d-a70b-4533-a247-d42baec76ca3; FormsWebSessionId=84600f79-b036-4025-a64a-a26f4f03fd65; __RequestVerificationToken=hQuEj0Q3g3kdpJMPZ0BPS7247RRbhAIj3kaiZfu2NMa3kdjfRLwjl0bHcnliYQD-q2XTdQn_j-q5T9tzia5MWd0bdANBIbjcYpR6jE2kft81; AADAuth.forms=eyJ0eXAiOiJKV1QiLCJyaCI6IjAuQVFZQWhBVmtVRUFxRmtLb1M1cy00UFAyejlKWnBjbXJlaE5QcHUzbjZjVXE3SWNHQU4wLiIsImFsZyI6IlJTMjU2Iiwia2lkIjoiOUdtbnlGUGtoYzNoT3VSMjJtdlN2Z25MbzdZIn0.eyJhdWQiOiJjOWE1NTlkMi03YWFiLTRmMTMtYTZlZC1lN2U5YzUyYWVjODciLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vNTA2NDA1ODQtMmE0MC00MjE2LWE4NGItOWIzZWUwZjNmNmNmL3YyLjAiLCJpYXQiOjE2OTk0OTQ0NTEsIm5iZiI6MTY5OTQ5NDQ1MSwiZXhwIjoxNjk5NDk5MzAyLCJhaW8iOiJBVVFBdS84VkFBQUFoZjdiVmFDdlN1S2hlb3FrM2o3eW9vOHNwb0dFT21hZ0hGdlZxMlM3cTg3VmE3M1FIbHdyOGhlZVNZQ3Y5SG1ZVUtWNHlGbE1vcmNxYk13YlV6TUN1dz09IiwiYXpwIjoiYzlhNTU5ZDItN2FhYi00ZjEzLWE2ZWQtZTdlOWM1MmFlYzg3IiwiYXpwYWNyIjoiMiIsImZhbWlseV9uYW1lIjoiVklMTEFESUVHTyBHT05aQUxFWiIsImdpdmVuX25hbWUiOiJWQUxFTlRJTkEiLCJuYW1lIjoiVklMTEFESUVHTyBHT05aQUxFWiBWQUxFTlRJTkEiLCJvaWQiOiIzOWY2MjNkNy1mMjMzLTQ3MDAtYjQ3NS0yMDE0YjAwNmIwMjMiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ2YWxlbnRpbmEudmlsbGFkaWVnb0BtYWlsLmVzY3VlbGFpbmcuZWR1LmNvIiwicHVpZCI6IjEwMDMzRkZGQTc3QzAyMTciLCJzY3AiOiJDaGFubmVsLlJlYWRCYXNpYy5BbGwgQ2hhbm5lbE1lbWJlci5SZWFkLkFsbCBDaGFubmVsTWVzc2FnZS5TZW5kIENoYXQuQ3JlYXRlIENoYXQuUmVhZFdyaXRlIENoYXRNZXNzYWdlLlNlbmQgRGlyZWN0b3J5LlJlYWQuQWxsIEZpbGVzLlJlYWRXcml0ZSBGaWxlcy5SZWFkV3JpdGUuQWxsIEdyb3VwLlJlYWQuQWxsIE1haWwuU2VuZCBNYWlsYm94U2V0dGluZ3MuUmVhZCBQZW9wbGUuUmVhZCBUZWFtLlJlYWRCYXNpYy5BbGwgVXNlci5SZWFkIFVzZXIuUmVhZC5BbGwiLCJzdWIiOiJrYlFpVE1QS0NadGVxdDBGNEZGRURmbHlITzg1SUFhbnNjMEVfNHBPYmdNIiwidGlkIjoiNTA2NDA1ODQtMmE0MC00MjE2LWE4NGItOWIzZWUwZjNmNmNmIiwidXBuIjoidmFsZW50aW5hLnZpbGxhZGllZ29AbWFpbC5lc2N1ZWxhaW5nLmVkdS5jbyIsInV0aSI6IlliVVAzTVNqUTBLRW5RMnlES0owQVEiLCJ2ZXIiOiIyLjAiLCJ3aWRzIjpbImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdfQ.J9NdKQguZhombTFU5i3ISsKqgXS17BpFQc21Axd1-ukttt6S5a_AQhYwCUkkKNRfMyH3bVs1Do-wHbdojWRdzYyezJ8z6_vfOI7OBtFXy4VOfPjXK0fxOHjFc8wujNuUOz2f13GeDBAvo0LrKQB7GyFfj--QRJ8leS9Cy0HImyzSQsyHVCBrrCbjTuARzNxKLn53BMF9r3s6QGXtUSpVOpqOu7cdxep_-aDTUTdLHgUCqXA04wXlgEFR8H1JOb2biFFiVl5IVALuKetSIJ-KcP2lUSVYUe2lZOwkj4qvhvP8l0RPdM09pbiAvAi6im7gLgCAAh3iKROyLm5XIFsYhw; OIDCAuth.forms=AUBgBlBroA-YZPpEoRq7GT8lR6FjxaX5W-hOrVbK2--fYJ-888OGaYa0_ADBqhm56KVmjBDjRYB7CcSGMGXSpowLauYFE7N-3LOTTemQ9RijIfTfbIkuegD-BY_pL4pg-t5AnvVlswhh6na3lvThuIH1TRLk1zlGl35RY_xg1MYAtI8oj-6ojkw129vpfaF_0koU_Ur7zO4AQdM7FpQ_SwJ-5tYLrKejbGIPOtZdPds0EVn76MbkbwidAgFmpeX4GwR1typwVAIsei0FrP6cWi1AYhZQhJAE4unF_NjJkYRGapGHixj7Z3h1ZcB3o3J48Lk90IgIEYtSuGrZ-LUTvCXdpF_rhV3ai_fJuNuPWL_icyosgeKfoHsDD3md_WXa2aUbSjKNZn3LiasbgaZxgFB3LzLUj26uM8SkK7b7RXO6mv_ok3BR7EVikeU1DrHLaQ3VjY0Syk1tCs6eU9W5r6aHHYzEStmvc770hAchSmbeKNe4PDf3AGM0DMxKJjvcVNZ6TkYjtgqg5JmPXyn6OieYUFWjxS3L9SZNoF8ebbVZtans9uy0C9t6Uo2rFTTb4VcFp5D4PWmvLUROT7RWAhAlTA11nIsue6Mo-oR5pkv04v0Zyan0uFCn7Vo9F5J2nPncfcvPRc0V-SymnaP5fvWrM4qqX7VCMPDSMxXPPd1doDbUeRaiB1M4DIg3MBllFqHHCGRT1pOdbIm_zdpCrUmkdumwJaRSWFaZZMNZCaAkEKXujI9u-kFp0QgOp7cStHw36nVSv6vf85xpe1RxuY5kqdeL57-vygTzJoCToXGrhH4GHLV0IM83V-3IoG-2Rpxk-oza1PIp6Fo4FGsXUdkyf1lgFAwOIQqaMJ9rv92FBpOau17OAid2PYU4UmCYGqDGuhGYn24gssYBMM-YJi2CTakBlm9ds6mjFhlDQdYR2x37dQnYhxHoubeOg8XTDdyUPkkpMub6Sj_gaLx0XZ2tWZ7IFNe1cuqkp5sQyD4tJHqsin1kccruVXXvdE9LM2hg4ID4jwsrcsUvwie0gfpToZvSMpjLN78stDmkrd3xeKHhyhKHioFzadz4SnYqWOuoqje_hf_yZBS4z_p8s0qyZ-rK29kGEB6rlg2_3J6HjwZ-rK8FkaO16tA6wjdeB5B35bR6EBDT-ZoPy7Xql-w",
+    # Add more cookies as needed
+}
+
+# Define the headers with the Cache-Control header set to no-cache
+headers = {
+    "Cache-Control": "no-cache"
+}
+
+# Create a session to manage and persist cookies
+session = requests.Session()
+
+# Set the cookies in the session
+session.cookies.update(cookies)
+
+# Send an HTTP GET request with cookies and the Cache-Control header and Make requests using the session
+response = session.get(url, cookies=cookies, headers=headers)
+
+
+# Check if the request was successful (status code 200)
+if response.status_code == 200:
+    # Get the current date and time
+    current_datetime = datetime.datetime.now()
+    
+    # Format the date and time as "YYYY-MM-DD-HHHH"
+    formatted_datetime = current_datetime.strftime("%Y-%m-%d")
+    
+    # Specify the file path using the formatted date and time
+    file_path = f"encuesta-estudiantes-{formatted_datetime}.xlsx"
+
+    # Save the response content to a file
+    with open(file_path, "wb") as file:
+        file.write(response.content)
+
+    print(f"File has been downloaded and saved as '{file_path}'.")
+else:
+    print(f"Failed to download the file. Status code: {response.status_code}")
+
+# When you're done with the session, you can close it to free up resources
+session.close()
